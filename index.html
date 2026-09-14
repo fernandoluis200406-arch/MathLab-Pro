@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathLab Pro v2.0</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<aside class="sidebar">
+<h2>MathLab Pro</h2>
+<button onclick="loadModule('dashboard')">🏠 Dashboard</button>
+
+<button onclick="loadModule('calculator')">📟 Calculadora Científica</button>
+<button onclick="loadModule('converter')">🔄 Conversor</button>
+<button onclick="loadModule('base')">💻 Bases</button>
+<button onclick="loadModule('finance')">💰 Calcular Juros Compostos</button>
+<button onclick="loadModule('statistics')">📊 Estatística (Média e Desvio Padrão)</button>
+<button onclick="loadModule('graph')">📈 Gráfico de Função</button>
+
+<button onclick="exportPDF()">📄 Exportar PDF</button>
+
+<button onclick="toggleTheme()">🌗 Tema</button>
+
+<!-- 👤 USUÁRIO LOGADO -->
+
+    <div class="user-info">
+
+        <div class="user-icon">
+            👤
+        </div>
+
+        <div class="user-details">
+
+            <span>Usuário conectado</span>
+
+            <strong id="userEmail">
+                Carregando...
+            </strong>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <!-- 🚪 SAIR -->
+
+    <button class="logout-btn" onclick="logout()">🚪 Sair</button>
+</aside>
+
+<main id="content">
+<h1>Bem-vindo ao MathLab Pro v2.0</h1>
+<p>Sistema Matemático Profissional</p>
+</main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@14.0.1/lib/browser/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script src="js/memory.js"></script>
+<script src="js/calculator.js"></script>
+<script src="js/converter.js"></script>
+<script src="js/baseConverter.js"></script>
+<script src="js/finance.js"></script>
+<script src="js/statistics.js"></script>
+<script src="js/graph.js"></script>
+<script src="js/exportPDF.js"></script>
+<script src="js/dashboard.js"></script>
+
+</body>
+</html>
