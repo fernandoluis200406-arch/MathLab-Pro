@@ -1,29 +1,34 @@
+
+"use strict";
+
 // ===============================
-// 🔐 PROTEÇÃO DE LOGIN
+// PROTEÇÃO DE LOGIN
 // ===============================
 
 async function verificarLogin() {
 
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    const { data: { user }, error } =
+        await supabaseClient.auth.getUser();
 
     if (error || !user) {
         window.location.href = "login.html";
-        return;
+        return false;
     }
 
     console.log("Usuário autenticado:", user.email);
 
-        // Mostrar e-mail do usuário
     const userEmail = document.getElementById("userEmail");
 
     if (userEmail) {
         userEmail.innerText = user.email;
     }
+
+    return true;
 }
 
 
 // ===============================
-// 🎨 TEMA (Dark / Light)
+// TEMA (DARK / LIGHT)
 // ===============================
 
 function toggleTheme() {
@@ -40,63 +45,74 @@ function toggleTheme() {
 
 
 // ===============================
-// 🚀 INICIALIZAÇÃO DO SISTEMA
+// INICIALIZAÇÃO
 // ===============================
 
 window.onload = async function () {
 
-    // Verificar autenticação
-    await verificarLogin();
+    const autenticado = await verificarLogin();
 
-    // Restaurar tema
+    if (!autenticado) {
+        return;
+    }
+
     const theme = localStorage.getItem("theme");
 
     if (theme === "light") {
         document.body.classList.add("light");
     }
 
-    // Carregar dashboard
     loadModule("dashboard");
 };
 
 
 // ===============================
-// 📦 SISTEMA DE MÓDULOS
+// SISTEMA DE MÓDULOS
 // ===============================
 
 function loadModule(module) {
 
     const content = document.getElementById("content");
 
+    if (!content) {
+        console.error("Elemento content não encontrado.");
+        return;
+    }
+
     switch (module) {
 
         case "dashboard":
-            content.innerHTML = dashboardHTML();
             loadDashboard();
             break;
 
         case "calculator":
             content.innerHTML = calculatorHTML();
+            carregarHistorico();
             break;
 
         case "converter":
             content.innerHTML = converterHTML();
+            carregarHistoricoConversoes();
             break;
 
         case "base":
             content.innerHTML = baseHTML();
+            carregarHistoricoBases();
             break;
 
         case "finance":
             content.innerHTML = financeHTML();
+            carregarHistoricoFinanceiro();
             break;
 
         case "statistics":
             content.innerHTML = statisticsHTML();
+            carregarHistoricoEstatistico();
             break;
 
         case "graph":
             content.innerHTML = graphHTML();
+            carregarHistoricoGraficos();
             break;
 
         default:

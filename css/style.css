@@ -1,10 +1,20 @@
+
 :root {
     --primary: #6366f1;
     --primary-hover: #4f46e5;
+
     --bg-dark: #0f172a;
     --bg-light: #f8fafc;
+
     --card-dark: #1e293b;
     --card-light: #ffffff;
+
+    /* Menu lateral - tema escuro */
+    --sidebar-bg: #111827;
+    --sidebar-text: #f8fafc;
+    --sidebar-muted: #cbd5e1;
+    --sidebar-border: rgba(255, 255, 255, 0.12);
+    --sidebar-hover: rgba(99, 102, 241, 0.2);
 }
 
 body {
@@ -20,23 +30,31 @@ body {
     min-height: 100vh;
 }
 
+/* ===============================
+   MENU LATERAL
+================================ */
+
 .sidebar {
     width: 260px;
-    background: #111827;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
     padding: 25px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    transition: background 0.3s, color 0.3s;
 }
 
 .sidebar h2 {
     margin-bottom: 20px;
+    color: var(--sidebar-text);
+    transition: color 0.3s;
 }
 
 .sidebar button {
     background: transparent;
     border: none;
-    color: #cbd5e1;
+    color: var(--sidebar-muted);
     padding: 12px;
     text-align: left;
     border-radius: 8px;
@@ -45,7 +63,14 @@ body {
 }
 
 .sidebar button:hover {
-    background: rgba(99,102,241,0.2);
+    background: var(--sidebar-hover);
+    color: var(--sidebar-text);
+}
+
+/* Item selecionado */
+.sidebar button.active,
+.sidebar button[aria-current="page"] {
+    background: var(--primary);
     color: white;
 }
 
@@ -54,13 +79,21 @@ main {
     padding: 40px;
 }
 
+/* ===============================
+   CARDS
+================================ */
+
 .card {
     background: var(--card-dark);
     padding: 25px;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
 }
+
+/* ===============================
+   BOTÕES
+================================ */
 
 button.action {
     background: var(--primary);
@@ -77,6 +110,10 @@ button.action:hover {
     transform: translateY(-2px);
 }
 
+/* ===============================
+   CAMPOS
+================================ */
+
 input, select {
     width: 100%;
     padding: 12px;
@@ -87,6 +124,10 @@ input, select {
     margin: 10px 0;
 }
 
+/* ===============================
+   TEMA CLARO
+================================ */
+
 .light {
     background: var(--bg-light);
     color: black;
@@ -96,32 +137,72 @@ input, select {
     background: var(--card-light);
 }
 
-.light input {
+/* Menu lateral no tema claro */
+.light .sidebar {
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #1e293b;
+    --sidebar-muted: #475569;
+    --sidebar-border: rgba(15, 23, 42, 0.12);
+    --sidebar-hover: rgba(99, 102, 241, 0.12);
+
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.04);
+}
+
+.light .sidebar h2 {
+    color: var(--sidebar-text);
+}
+
+.light .sidebar button {
+    color: var(--sidebar-muted);
+}
+
+.light .sidebar button:hover {
+    color: var(--primary);
+}
+
+.light .sidebar button.active,
+.light .sidebar button[aria-current="page"] {
+    background: var(--primary);
+    color: white;
+}
+
+.light input,
+.light select {
     background: white;
     color: black;
+    border-color: #cbd5e1;
 }
+
+/* ===============================
+   CALCULADORA
+================================ */
 
 .calc-grid {
-display:grid;
-grid-template-columns: repeat(4,1fr);
-gap:10px;
-margin-top:15px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 15px;
 }
 
-.calc-grid button{
-padding:20px;
-border:none;
-border-radius:12px;
-background:#1e293b;
-color:white;
-font-size:18px;
-cursor:pointer;
-transition:0.2s;
+.calc-grid button {
+    padding: 20px;
+    border: none;
+    border-radius: 12px;
+    background: #1e293b;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.calc-grid button:hover{
-background:#334155;
+.calc-grid button:hover {
+    background: #334155;
 }
+
+/* ===============================
+   EXPLICAÇÕES
+================================ */
 
 .explicacao {
     margin-top: 25px;
@@ -140,6 +221,10 @@ background:#334155;
 .explicacao h4 {
     margin-top: 15px;
 }
+
+/* ===============================
+   SUGESTÕES
+================================ */
 
 .suggestions {
     display: flex;
@@ -161,6 +246,10 @@ background:#334155;
 .suggestions button:hover {
     transform: scale(1.05);
 }
+
+/* ===============================
+   LOGIN
+================================ */
 
 .login-container {
     width: 380px;
@@ -204,9 +293,9 @@ body:has(.login-container) {
     min-height: 100vh;
 }
 
-/* =========================================================
-   BOTÃO SECUNDÁRIO - REDEFINIR ZOOM
-   ========================================================= */
+/* ===============================
+   BOTÃO SECUNDÁRIO
+================================ */
 
 .secondary-action {
     background: var(--button);
@@ -232,9 +321,9 @@ body:has(.login-container) {
     transform: translateY(0);
 }
 
-/* =========================================================
-   AÇÕES DO GRÁFICO - botões alinhados
-   ========================================================= */
+/* ===============================
+   AÇÕES DO GRÁFICO
+================================ */
 
 .graph-actions {
     display: flex;
@@ -245,15 +334,13 @@ body:has(.login-container) {
 }
 
 /* ===============================
-   👤 USUÁRIO LOGADO
+   USUÁRIO LOGADO
 ================================ */
 
 .user-info {
     margin-top: 20px;
     padding: 12px 10px;
-
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-
+    border-top: 1px solid var(--sidebar-border);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -272,41 +359,33 @@ body:has(.login-container) {
 
 .user-details span {
     font-size: 11px;
-    color: #9ca3af;
+    color: var(--sidebar-muted);
     margin-bottom: 3px;
 }
 
 .user-details strong {
     font-size: 12px;
-    color: white;
-
+    color: var(--sidebar-text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
     max-width: 150px;
 }
 
-
 /* ===============================
-   🚪 BOTÃO SAIR
+   BOTÃO SAIR
 ================================ */
 
 .logout-btn {
     width: 100%;
     padding: 10px;
-
     border: none;
     border-radius: 8px;
-
     background: #dc2626;
     color: white;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
-
     transition: 0.2s;
 }
 

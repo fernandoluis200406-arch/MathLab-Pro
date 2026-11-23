@@ -1,29 +1,116 @@
+
+"use strict";
+
+// ===============================
+// MEMÓRIA DA CALCULADORA
+// ===============================
+
 let memoryValue = 0;
 
+
+// ===============================
+// ADICIONAR À MEMÓRIA (M+)
+// ===============================
+
 function memoryAdd() {
-    let result = getLastResult();
-    if (!isNaN(result)) {
+
+    const result = getLastResult();
+
+    if (result !== null) {
+
         memoryValue += result;
-        alert("Memória atual: " + memoryValue);
+
+        alert(
+            "Valor adicionado à memória: " + memoryValue
+        );
+
     }
+
 }
+
+
+// ===============================
+// SUBTRAIR DA MEMÓRIA (M-)
+// ===============================
 
 function memorySubtract() {
-    let result = getLastResult();
-    if (!isNaN(result)) {
+
+    const result = getLastResult();
+
+    if (result !== null) {
+
         memoryValue -= result;
-        alert("Memória atual: " + memoryValue);
+
+        alert(
+            "Valor subtraído da memória: " + memoryValue
+        );
+
     }
+
 }
+
+
+// ===============================
+// RECUPERAR MEMÓRIA (MR)
+// ===============================
 
 function memoryRecall() {
-    alert("Memória armazenada: " + memoryValue);
+
+    const display =
+        document.getElementById("calcDisplay");
+
+    const resultado =
+        document.getElementById("calcResult");
+
+    if (display) {
+
+        display.value = String(memoryValue);
+
+        lastCalculationResult = memoryValue;
+
+        if (resultado) {
+            resultado.textContent = String(memoryValue);
+        }
+
+    }
+
+    alert(
+        "Memória recuperada: " + memoryValue
+    );
+
 }
 
-function getLastResult() {
-    const resultText = document.getElementById("calcResult");
-    if (!resultText) return 0;
 
-    const match = resultText.innerText.match(/[-+]?[0-9]*\.?[0-9]+/);
-    return match ? parseFloat(match[0]) : 0;
+// ===============================
+// LIMPAR MEMÓRIA (MC)
+// ===============================
+
+function memoryClear() {
+
+    memoryValue = 0;
+
+    alert("Memória limpa!");
+
+}
+
+
+// ===============================
+// CAPTURAR ÚLTIMO RESULTADO
+// ===============================
+
+function getLastResult() {
+
+    if (
+        typeof lastCalculationResult === "number" &&
+        Number.isFinite(lastCalculationResult)
+    ) {
+
+        return lastCalculationResult;
+
+    }
+
+    alert("Nenhum resultado disponível.");
+
+    return null;
+
 }

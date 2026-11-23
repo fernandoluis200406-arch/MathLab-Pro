@@ -1,158 +1,645 @@
+
+"use strict";
+
+// ========================================
+// MATHLAB PRO - CALCULADORA CIENTÍFICA
+// INTEGRAÇÃO COM SUPABASE
+// ========================================
+
 let history = [];
 let isDegree = true;
+let lastCalculationResult = null;
 
-function calculatorHTML(){
-return `
 
-<div class="card">
-<h2>Calculadora Científica</h2>
+// ========================================
+// INTERFACE DA CALCULADORA
+// ========================================
 
-<input id="display" placeholder="Digite ou use os botões">
+function calculatorHTML() {
 
-<div class="calc-grid">
-${createButtons()}
-</div>
+    return `
+        <div class="card">
 
-<h3>Histórico</h3>
-<ul id="historyList"></ul>
-</div>
+            <h2>Calculadora Científica</h2>
 
-<div class="explicacao">
-    <h3>🧮 Calculadora Científica</h3>
+            <input
+                id="calcDisplay"
+                placeholder="Digite ou use os botões"
+                autocomplete="off"
+            >
 
-    <p>
-    A calculadora científica permite realizar desde operações básicas até cálculos mais avançados,
-    sendo útil para resolver expressões matemáticas do dia a dia.
-    </p>
+            <p>
+                Resultado:
+                <strong id="calcResult"></strong>
+            </p>
 
-    <h4>📌 Operações Básicas</h4>
-    <ul>
-        <li><strong>+</strong> → Adição (ex: 2 + 3 = 5)</li>
-        <li><strong>-</strong> → Subtração (ex: 5 - 2 = 3)</li>
-        <li><strong>*</strong> → Multiplicação (ex: 4 * 3 = 12)</li>
-        <li><strong>/</strong> → Divisão (ex: 10 / 2 = 5)</li>
-    </ul>
+            <div class="calc-grid">
+                ${createButtons()}
+            </div>
 
-    <h4>📐 Potência e Raiz</h4>
-    <ul>
-        <li><strong>x²</strong> → Eleva o número ao quadrado</li>
-        <li><strong>xʸ</strong> → Potência (ex: 2^3 = 8)</li>
-        <li><strong>√</strong> → Raiz quadrada (ex: √9 = 3)</li>
-    </ul>
+            <h3>Histórico</h3>
 
-    <h4>📊 Funções Trigonométricas</h4>
-    <ul>
-        <li><strong>sen(x)</strong> → Seno</li>
-        <li><strong>cos(x)</strong> → Cosseno</li>
-        <li><strong>tan(x)</strong> → Tangente</li>
-    </ul>
+            <p id="historyStatus"></p>
 
-    <h4>🔢 Outras Funções</h4>
-    <ul>
-        <li><strong>log(x)</strong> → Logaritmo</li>
-        <li><strong>π</strong> → Valor aproximado de 3.1416</li>
-        <li><strong>ln(x)</strong> → Logaritmo natural do número x (utiliza a base e (número de Euler), aproximadamente 2,718)</li>
-    </ul>
+            <ul id="historyList"></ul>
 
-    <h4>⚙️ Como usar</h4>
-    <ul>
-        <li>Digite a expressão desejada</li>
-        <li>Use os botões ou teclado</li>
-        <li>Pressione "=" ou Enter para calcular</li>
-    </ul>
+        </div>
 
-    <h4>⚠️ Observações</h4>
-    <ul>
-        <li>Use <strong>*</strong> para multiplicar (ex: 2*3)</li>
-        <li>Use <strong>Math.</strong> para funções (ex: Math.sin(1))</li>
-        <li>Evite expressões incompletas</li>
-    </ul>
-</div>
-`;
+        <div class="explicacao">
 
+            <h3>Calculadora Científica</h3>
+
+            <p>
+                Realize operações básicas e cálculos matemáticos avançados.
+            </p>
+
+            <h4>Operações Básicas</h4>
+
+            <ul>
+                <li>+ Adição</li>
+                <li>- Subtração</li>
+                <li>* Multiplicação</li>
+                <li>/ Divisão</li>
+                <li>% Resto da divisão</li>
+            </ul>
+
+            <h4>Potência e Raiz</h4>
+
+            <ul>
+                <li>x² e xʸ: Potência</li>
+                <li>sqrt(x): Raiz quadrada</li>
+            </ul>
+
+            <h4>Funções Trigonométricas</h4>
+
+            <ul>
+                <li>sen(x): Seno</li>
+                <li>cos(x): Cosseno</li>
+                <li>tan(x): Tangente</li>
+                <li>Alternância entre graus e radianos</li>
+            </ul>
+
+            <h4>Outras Funções</h4>
+
+            <ul>
+                <li>log(x): Logaritmo na base 10</li>
+                <li>ln(x): Logaritmo natural</li>
+                <li>π: Número pi</li>
+            </ul>
+
+            <h4>Memória</h4>
+
+            <ul>
+                <li>M+: Adicionar resultado à memória</li>
+                <li>M−: Subtrair resultado da memória</li>
+                <li>MR: Recuperar memória</li>
+                <li>MC: Limpar memória</li>
+            </ul>
+
+            <h4>Como usar</h4>
+
+            <p>
+                Digite a expressão, utilize os botões e pressione
+                "=" ou Enter para calcular.
+            </p>
+
+        </div>
+    `;
+}
+
+
+// ========================================
+// BOTÕES
+// ========================================
+
+function createButtons() {
+
+    const buttons = [
+        '1', '2', '3', '+',
+        '4', '5', '6', '-',
+        '7', '8', '9', '*',
+        '.', '0', '=', '/',
+        '^', '%', 'π', 'C',
+        'sqrt(', 'sen(', 'cos(', 'tan(',
+        'log(', 'ln(', '(', ')',
+        'M+', 'M-', 'MR', 'MC'
+    ];
+
+    return `
+        <button
+            id="angleModeButton"
+            onclick="toggleAngleMode()"
+        >
+            DEG
+        </button>
+
+        ${buttons.map(btn =>
+            `<button onclick="press('${btn}')">${btn}</button>`
+        ).join('')}
+    `;
+}
+
+
+// ========================================
+// MODO GRAUS / RADIANOS
+// ========================================
+
+function toggleAngleMode() {
+
+    isDegree = !isDegree;
+
+    const button =
+        document.getElementById("angleModeButton");
+
+    if (button) {
+
+        button.textContent =
+            isDegree ? "DEG" : "RAD";
+
+    }
+
+    const status =
+        document.getElementById("historyStatus");
+
+    if (status) {
+
+        status.textContent = isDegree
+            ? "Modo graus ativado."
+            : "Modo radianos ativado.";
+
+    }
+}
+
+
+// ========================================
+// INSERIR VALORES
+// ========================================
+
+function press(value) {
+
+    const display =
+        document.getElementById("calcDisplay");
+
+    if (!display) return;
+
+    // Limpar visor
+    if (value === "C") {
+
+        display.value = "";
+
+        lastCalculationResult = null;
+
+        const resultado =
+            document.getElementById("calcResult");
+
+        if (resultado) {
+            resultado.textContent = "";
+        }
+
+        return;
+    }
+
+    // Calcular
+    if (value === "=") {
+
+        calculate();
+
+        return;
+    }
+
+    // Funções de memória
+    if (value === "M+") {
+
+        memoryAdd();
+
+        return;
+    }
+
+    if (value === "M-") {
+
+        memorySubtract();
+
+        return;
+    }
+
+    if (value === "MR") {
+
+        memoryRecall();
+
+        return;
+    }
+
+    if (value === "MC") {
+
+        memoryClear();
+
+        return;
+    }
+
+    // Depois de um resultado, começar nova expressão
+    // ao inserir um número ou uma função.
+    if (lastCalculationResult !== null) {
+
+        const iniciarNovaExpressao =
+            /^[0-9.]$/.test(value) ||
+            value === "π" ||
+            value === "(" ||
+            value.endsWith("(");
+
+        if (iniciarNovaExpressao) {
+
+            display.value = "";
+
+        }
+
+        lastCalculationResult = null;
+
+    }
+
+    // Número pi
+    if (value === "π") {
+
+        display.value += "pi";
+
+        display.focus();
+
+        return;
+    }
+
+    display.value += value;
+
+    display.focus();
+}
+
+
+// ========================================
+// PREPARAR EXPRESSÃO PARA MATH.JS
+// ========================================
+
+function prepararExpressao(expression) {
+
+    return expression
+
+        .replace(/π/g, "pi")
+
+        .replace(/\bMath\.PI\b/g, "pi")
+
+        .replace(/\bMath\.sqrt\b/g, "sqrt")
+
+        .replace(/\bsen\s*\(/gi, "sin(")
+
+        .replace(/\blog\s*\(/gi, "log10(")
+
+        .replace(/\bln\s*\(/gi, "log(");
 
 }
 
-function createButtons(){
-const buttons = [
-'1','2','3','+',
-'4','5','6','-',
-'7','8','9','*',
-'.','0','=','/',
-'^','%','π','C',
-'sqrt()','sen()','cos()',
-'tan()','log()','ln()'
-];
 
-return buttons.map(btn =>
-`<button onclick="press('${btn}')">${btn}</button>`
-).join('');
+// ========================================
+// FUNÇÕES TRIGONOMÉTRICAS
+// ========================================
+
+function criarFuncoesTrigonométricas() {
+
+    return {
+
+        sin: valor => {
+
+            return isDegree
+                ? math.sin(math.unit(valor, "deg"))
+                : math.sin(valor);
+
+        },
+
+        cos: valor => {
+
+            return isDegree
+                ? math.cos(math.unit(valor, "deg"))
+                : math.cos(valor);
+
+        },
+
+        tan: valor => {
+
+            return isDegree
+                ? math.tan(math.unit(valor, "deg"))
+                : math.tan(valor);
+
+        }
+
+    };
+
 }
 
-function press(value){
-const display = document.getElementById("display");
 
-if(value === "C"){
-display.value="";
-return;
+// ========================================
+// CALCULAR
+// ========================================
+
+async function calculate() {
+
+    const display =
+        document.getElementById("calcDisplay");
+
+    const resultadoElemento =
+        document.getElementById("calcResult");
+
+    const status =
+        document.getElementById("historyStatus");
+
+    if (!display) return;
+
+    const expressaoOriginal =
+        display.value.trim();
+
+    if (!expressaoOriginal) return;
+
+    try {
+
+        if (typeof math === "undefined") {
+
+            throw new Error(
+                "Biblioteca Math.js não carregada."
+            );
+
+        }
+
+        const expressao =
+            prepararExpressao(expressaoOriginal);
+
+        const resultado = math.evaluate(
+            expressao,
+            criarFuncoesTrigonométricas()
+        );
+
+        if (
+            typeof resultado !== "number" ||
+            !Number.isFinite(resultado)
+        ) {
+
+            throw new Error(
+                "Resultado matemático inválido."
+            );
+
+        }
+
+        // Guardar último resultado
+        lastCalculationResult = resultado;
+
+        // Exibir resultado
+        display.value = String(resultado);
+
+        if (resultadoElemento) {
+
+            resultadoElemento.textContent =
+                String(resultado);
+
+        }
+
+        if (status) {
+            status.textContent = "";
+        }
+
+        // Criar registro local
+        const novoCalculo = {
+
+            expressao: expressaoOriginal,
+
+            resultado: resultado,
+
+            created_at: new Date().toISOString()
+
+        };
+
+        history.unshift(novoCalculo);
+
+        history = history.slice(0, 5);
+
+        updateHistory();
+
+        // Salvar no Supabase
+        await salvarCalculo(
+            expressaoOriginal,
+            resultado
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Erro no cálculo:",
+            error
+        );
+
+        lastCalculationResult = null;
+
+        if (resultadoElemento) {
+
+            resultadoElemento.textContent = "Erro";
+
+        }
+
+        if (status) {
+
+            status.textContent =
+                "Não foi possível realizar esse cálculo.";
+
+        }
+
+    }
+
 }
 
-if(value === "="){
-calculate();
-return;
+
+// ========================================
+// SALVAR CÁLCULO NO SUPABASE
+// ========================================
+
+async function salvarCalculo(expressao, resultado) {
+
+    const status =
+        document.getElementById("historyStatus");
+
+    try {
+
+        if (
+            typeof supabaseClient === "undefined" ||
+            !supabaseClient
+        ) {
+
+            throw new Error(
+                "Conexão com Supabase não encontrada."
+            );
+
+        }
+
+        const { data: sessionData, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        if (!sessionData.session) {
+
+            throw new Error(
+                "Usuário não autenticado."
+            );
+
+        }
+
+        const { error } = await supabaseClient
+            .from("calculos")
+            .insert({
+
+                tipo: "calculadora_cientifica",
+
+                expressao: expressao,
+
+                resultado: resultado
+
+            });
+
+        if (error) throw error;
+
+        if (status) {
+
+            status.textContent =
+                "Cálculo salvo na nuvem.";
+
+        }
+
+        await carregarHistorico();
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao salvar cálculo:",
+            error
+        );
+
+        if (status) {
+
+            status.textContent =
+                "Cálculo realizado, mas não foi possível salvar no banco.";
+
+        }
+
+    }
+
 }
 
-if(value === "π"){
-display.value += "Math.PI";
-return;
+
+// ========================================
+// CARREGAR HISTÓRICO DO SUPABASE
+// ========================================
+
+async function carregarHistorico() {
+
+    const status =
+        document.getElementById("historyStatus");
+
+    try {
+
+        if (
+            typeof supabaseClient === "undefined" ||
+            !supabaseClient
+        ) {
+
+            throw new Error(
+                "Conexão com Supabase não encontrada."
+            );
+
+        }
+
+        const { data, error } = await supabaseClient
+            .from("calculos")
+            .select("expressao, resultado, created_at")
+            .eq("tipo", "calculadora_cientifica")
+            .order("created_at", {
+                ascending: false
+            })
+            .limit(5);
+
+        if (error) throw error;
+
+        history = data || [];
+
+        updateHistory();
+
+        if (status) {
+
+            status.textContent = history.length
+                ? "Histórico sincronizado com o Supabase."
+                : "Nenhum cálculo registrado ainda.";
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar histórico:",
+            error
+        );
+
+        if (status) {
+
+            status.textContent =
+                "Não foi possível carregar o histórico do banco.";
+
+        }
+
+    }
+
 }
 
-if(value === "^"){
-display.value += "**";
-return;
+
+// ========================================
+// EXIBIR HISTÓRICO
+// ========================================
+
+function updateHistory() {
+
+    const list =
+        document.getElementById("historyList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    history.slice(0, 5).forEach(item => {
+
+        const li = document.createElement("li");
+
+        li.textContent =
+            `${item.expressao} = ${item.resultado}`;
+
+        list.appendChild(li);
+
+    });
+
 }
 
-display.value += value;
-}
 
-function calculate(){
-const display = document.getElementById("display");
-try{
+// ========================================
+// TECLADO
+// ========================================
 
-let expression = display.value
-.replace(/sqrt/g,"Math.sqrt")
-.replace(/sin/g,"Math.sin")
-.replace(/cos/g,"Math.cos")
-.replace(/tan/g,"Math.tan")
-.replace(/log/g,"Math.log10")
-.replace(/ln/g,"Math.log");
+document.addEventListener("keydown", function(event) {
 
-let result = Function('"use strict";return ('+expression+')')();
+    const display =
+        document.getElementById("calcDisplay");
 
-history.push(display.value + " = " + result);
-updateHistory();
+    if (
+        !display ||
+        document.activeElement !== display
+    ) {
+        return;
+    }
 
-display.value = result;
+    if (event.key === "Enter") {
 
-}catch{
-display.value = "Erro";
-}
-}
+        event.preventDefault();
 
-function updateHistory(){
-const list = document.getElementById("historyList");
-list.innerHTML = "";
+        calculate();
 
-history.slice(-5).forEach(item=>{
-list.innerHTML += `<li>${item}</li>`;
-});
-}
+    }
 
-document.addEventListener("keydown",function(e){
-const display = document.getElementById("display");
-if(!display) return;
-
-if(e.key === "Enter"){
-calculate();
-}
 });
