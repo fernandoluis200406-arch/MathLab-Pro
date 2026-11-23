@@ -38,31 +38,63 @@ function limparMensagem() {
 // ========================================
 
 function mostrarLogin() {
-    document.getElementById("loginSection").hidden = false;
-    document.getElementById("recoverySection").hidden = true;
-    document.getElementById("newPasswordSection").hidden = true;
+    const login = document.getElementById("loginSection");
+    const recovery = document.getElementById("recoverySection");
+    const newPassword = document.getElementById("newPasswordSection");
+    const signup = document.getElementById("signupSection");
+
+    if (login) login.hidden = false;
+    if (recovery) recovery.hidden = true;
+    if (newPassword) newPassword.hidden = true;
+    if (signup) signup.hidden = true;
 
     limparMensagem();
 }
 
 function mostrarRecuperacao() {
-    document.getElementById("loginSection").hidden = true;
-    document.getElementById("recoverySection").hidden = false;
-    document.getElementById("newPasswordSection").hidden = true;
+    const login = document.getElementById("loginSection");
+    const recovery = document.getElementById("recoverySection");
+    const newPassword = document.getElementById("newPasswordSection");
+    const signup = document.getElementById("signupSection");
 
-    const email = document.getElementById("email").value.trim();
+    if (login) login.hidden = true;
+    if (recovery) recovery.hidden = false;
+    if (newPassword) newPassword.hidden = true;
+    if (signup) signup.hidden = true;
 
-    if (email) {
+    const email = document.getElementById("email")?.value.trim();
+
+    if (email && document.getElementById("recoveryEmail")) {
         document.getElementById("recoveryEmail").value = email;
     }
 
     limparMensagem();
 }
 
+function mostrarCadastro() {
+    const login = document.getElementById("loginSection");
+    const recovery = document.getElementById("recoverySection");
+    const newPassword = document.getElementById("newPasswordSection");
+    const signup = document.getElementById("signupSection");
+
+    if (login) login.hidden = true;
+    if (recovery) recovery.hidden = true;
+    if (newPassword) newPassword.hidden = true;
+    if (signup) signup.hidden = false;
+
+    limparMensagem();
+}
+
 function mostrarNovaSenha() {
-    document.getElementById("loginSection").hidden = true;
-    document.getElementById("recoverySection").hidden = true;
-    document.getElementById("newPasswordSection").hidden = false;
+    const login = document.getElementById("loginSection");
+    const recovery = document.getElementById("recoverySection");
+    const newPassword = document.getElementById("newPasswordSection");
+    const signup = document.getElementById("signupSection");
+
+    if (login) login.hidden = true;
+    if (recovery) recovery.hidden = true;
+    if (newPassword) newPassword.hidden = false;
+    if (signup) signup.hidden = true;
 
     limparMensagem();
 }
@@ -97,7 +129,6 @@ async function verificarAcesso() {
         return;
     }
 
-    // Verificar se o link recebido é de recuperação
     const hash = window.location.hash;
 
     const parametros = new URLSearchParams(
@@ -109,9 +140,8 @@ async function verificarAcesso() {
         parametros.get("error") === "access_denied"
     ) {
         mostrarMensagem(
-            "O link de recuperação expirou ou é inválido. Solicite outro e-mail."
+            "O link recebido expirou ou é inválido. Solicite outro."
         );
-
         return;
     }
 
@@ -174,6 +204,110 @@ async function login() {
 
 
 // ========================================
+// CRIAR CONTA
+// ========================================
+
+async function criarConta() {
+
+    const nome =
+        document.getElementById("signupName").value.trim();
+
+    const email =
+        document.getElementById("signupEmail").value.trim();
+
+    const senha =
+        document.getElementById("signupPassword").value;
+
+    const confirmacao =
+        document.getElementById("signupConfirmPassword").value;
+
+    limparMensagem();
+
+    if (!nome || !email || !senha || !confirmacao) {
+        mostrarMensagem("Preencha todos os campos.");
+        return;
+    }
+
+    if (nome.length < 3) {
+        mostrarMensagem("Informe seu nome completo.");
+        return;
+    }
+
+    if (senha.length < 6) {
+        mostrarMensagem("A senha deve ter pelo menos 6 caracteres.");
+        return;
+    }
+
+    if (senha !== confirmacao) {
+        mostrarMensagem("As senhas não são iguais.");
+        return;
+    }
+
+    const botao = document.getElementById("signupButton");
+
+    if (botao) {
+        botao.disabled = true;
+        botao.textContent = "Criando conta...";
+    }
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signUp({
+                email,
+                password: senha,
+                options: {
+                    data: {
+                        full_name: nome
+                    },
+                    emailRedirectTo:
+                        window.location.origin +
+                        window.location.pathname
+                }
+            });
+
+        if (error) {
+            console.error("Erro no cadastro:", error);
+
+            mostrarMensagem(
+                "Não foi possível criar a conta. Verifique os dados e tente novamente."
+            );
+
+            return;
+        }
+
+        if (data.session) {
+            alert("Conta criada com sucesso!");
+
+            window.location.replace("index.html");
+            return;
+        }
+
+        mostrarLogin();
+
+        mostrarMensagem(
+            "Cadastro realizado! Confira seu e-mail para confirmar a conta antes de entrar."
+        );
+
+    } catch (error) {
+
+        console.error("Erro inesperado no cadastro:", error);
+
+        mostrarMensagem(
+            "Ocorreu um erro ao criar sua conta. Tente novamente."
+        );
+
+    } finally {
+
+        if (botao) {
+            botao.disabled = false;
+            botao.textContent = "Criar minha conta";
+        }
+    }
+}
+
+
+// ========================================
 // SOLICITAR RECUPERAÇÃO DE SENHA
 // ========================================
 
@@ -191,15 +325,18 @@ async function recuperarSenha() {
 
     const { error } =
         await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin +
+            redirectTo:
+                window.location.origin +
                 window.location.pathname
         });
 
     if (error) {
         console.error("Erro na recuperação:", error);
+
         mostrarMensagem(
             "Não foi possível enviar o e-mail. Tente novamente."
         );
+
         return;
     }
 
@@ -247,9 +384,11 @@ async function atualizarSenha() {
 
     if (error) {
         console.error("Erro ao atualizar senha:", error);
+
         mostrarMensagem(
             "Não foi possível atualizar a senha. Solicite um novo link."
         );
+
         return;
     }
 

@@ -1,9 +1,11 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Login - MathLab Pro</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -17,14 +19,31 @@
 
         <h2>MathLab Pro</h2>
 
-        <!-- LOGIN -->
+        <!-- =================================
+             LOGIN
+        ================================== -->
+
         <div id="loginSection">
 
-            <input type="email" id="email" placeholder="E-mail">
+            <h3>Entrar na sua conta</h3>
 
-            <input type="password" id="password" placeholder="Senha">
+            <input
+                type="email"
+                id="email"
+                placeholder="E-mail"
+                autocomplete="email"
+            >
 
-            <button class="action" onclick="login()">Entrar</button>
+            <input
+                type="password"
+                id="password"
+                placeholder="Senha"
+                autocomplete="current-password"
+            >
+
+            <button class="action" onclick="login()">
+                Entrar
+            </button>
 
             <p>
                 <a href="#" onclick="mostrarRecuperacao(); return false;">
@@ -32,16 +51,91 @@
                 </a>
             </p>
 
+            <p>
+                Ainda não possui uma conta?
+                <a href="#" onclick="mostrarCadastro(); return false;">
+                    Criar conta
+                </a>
+            </p>
+
         </div>
 
-        <!-- SOLICITAR RECUPERAÇÃO -->
+
+        <!-- =================================
+             CADASTRO
+        ================================== -->
+
+        <div id="signupSection" hidden>
+
+            <h3>Criar sua conta</h3>
+
+            <p>Preencha os dados para começar a utilizar o MathLab Pro.</p>
+
+            <input
+                type="text"
+                id="signupName"
+                placeholder="Nome completo"
+                autocomplete="name"
+            >
+
+            <input
+                type="email"
+                id="signupEmail"
+                placeholder="E-mail"
+                autocomplete="email"
+            >
+
+            <input
+                type="password"
+                id="signupPassword"
+                placeholder="Crie uma senha"
+                autocomplete="new-password"
+            >
+
+            <input
+                type="password"
+                id="signupConfirmPassword"
+                placeholder="Confirme sua senha"
+                autocomplete="new-password"
+            >
+
+            <button
+                class="action"
+                id="signupButton"
+                onclick="criarConta()"
+            >
+                Criar minha conta
+            </button>
+
+            <p>
+                Já possui uma conta?
+                <a href="#" onclick="mostrarLogin(); return false;">
+                    Voltar ao login
+                </a>
+            </p>
+
+        </div>
+
+
+        <!-- =================================
+             RECUPERAÇÃO DE SENHA
+        ================================== -->
+
         <div id="recoverySection" hidden>
 
             <h3>Recuperar senha</h3>
 
-            <p>Informe seu e-mail cadastrado para receber o link de recuperação.</p>
+            <p>
+                Informe seu e-mail cadastrado para receber
+                o link de recuperação.
+            </p>
 
-            <input type="email" id="recoveryEmail" placeholder="Seu e-mail">
+            <input
+                type="email"
+                id="recoveryEmail"
+                placeholder="Seu e-mail"
+                autocomplete="email"
+            >
 
             <button class="action" onclick="recuperarSenha()">
                 Enviar link de recuperação
@@ -55,7 +149,11 @@
 
         </div>
 
-        <!-- CADASTRAR NOVA SENHA -->
+
+        <!-- =================================
+             CADASTRAR NOVA SENHA
+        ================================== -->
+
         <div id="newPasswordSection" hidden>
 
             <h3>Nova senha</h3>
@@ -64,12 +162,14 @@
                 type="password"
                 id="newPassword"
                 placeholder="Digite sua nova senha"
+                autocomplete="new-password"
             >
 
             <input
                 type="password"
                 id="confirmPassword"
                 placeholder="Confirme sua nova senha"
+                autocomplete="new-password"
             >
 
             <button class="action" onclick="atualizarSenha()">
@@ -78,9 +178,19 @@
 
         </div>
 
-        <p id="loginError"></p>
+
+        <!-- =================================
+             MENSAGENS
+        ================================== -->
+
+        <p id="loginError" role="status" aria-live="polite"></p>
 
     </div>
+
+
+    <!-- =================================
+         BIBLIOTECAS E AUTENTICAÇÃO
+    ================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/auth.js"></script>
